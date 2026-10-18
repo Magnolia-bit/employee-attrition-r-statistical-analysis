@@ -1,0 +1,196 @@
+
+---
+title: "Employee Attrition and Income Analysis"
+output: html_document
+---
+
+# Employee Attrition and Income Analysis
+
+This project explores relationships between employee characteristics, attrition and monthly income using the IBM HR Analytics dataset.
+
+## 1. Data Import and Inspection
+
+Load the dataset and inspect its dimensions and structure.
+
+```{r data-import}
+hrdata <- read.csv("HR-Employee-Attrition.csv")
+
+dim(hrdata)
+head(hrdata)
+str(hrdata)
+```
+
+## 2. Correlation Analysis
+
+Examine relationships between selected numerical variables. Education is stored as an ordinal numerical code, so correlations involving this variable should be interpreted cautiously.
+
+```{r correlation}
+# Create a list of numeric columns
+num_cols <- c(
+  "Age", "DailyRate", "DistanceFromHome",
+  "Education", "HourlyRate", "MonthlyIncome",
+  "MonthlyRate", "NumCompaniesWorked",
+  "TotalWorkingYears", "TrainingTimesLastYear"
+)
+
+# Filter the data
+hrdata_num <- hrdata[, num_cols]
+
+# Calculate the correlation matrix
+cor(hrdata_num)
+```
+
+## 3. Scatterplot Analysis
+
+First, examine monthly income, age and education. Education is an ordinal variable, so its values appear in discrete bands.
+
+```{r scatterplot-education}
+pairs(
+  ~ MonthlyIncome + Age + Education,
+  data = hrdata,
+  main = "Income, Age and Education"
+)
+```
+
+Next, replace education with total working years to compare three numerical variables.
+
+```{r scatterplot-experience}
+pairs(
+  ~ MonthlyIncome + Age + TotalWorkingYears,
+  data = hrdata,
+  main = "Income, Age and Working Experience"
+)
+```
+
+## 4. Education-Level Analysis
+
+Convert the education codes into labelled categories.
+
+```{r education-categories}
+hrdata$EducationLabel <- factor(
+  hrdata$Education,
+  levels = 1:5,
+  labels = c(
+    "Below College",
+    "College",
+    "Bachelor",
+    "Master",
+    "Doctor"
+  ),
+  ordered = TRUE
+)
+
+table(hrdata$EducationLabel, useNA = "ifany")
+```
+
+### Age by Education Level
+
+```{r education-age}
+boxplot(
+  Age ~ EducationLabel,
+  data = hrdata,
+  main = "Age by Education Level",
+  xlab = "Education",
+  ylab = "Age",
+  outline = TRUE,
+  pch = 1
+)
+```
+
+### Working Experience by Education Level
+
+```{r education-experience}
+boxplot(
+  TotalWorkingYears ~ EducationLabel,
+  data = hrdata,
+  main = "Total Working Years by Education Level",
+  xlab = "Education",
+  ylab = "Total Working Years",
+  outline = TRUE,
+  pch = 1
+)
+```
+
+### Monthly Income by Education Level
+
+```{r education-income}
+boxplot(
+  MonthlyIncome ~ EducationLabel,
+  data = hrdata,
+  main = "Monthly Income by Education Level",
+  xlab = "Education",
+  ylab = "Monthly Income",
+  outline = TRUE,
+  pch = 1
+)
+```
+
+## 5. Employee Attrition and Age
+
+Investigate whether employees who left the organisation differ in age from those who remained.
+
+### Age Distribution by Attrition
+
+```{r attrition-boxplot}
+boxplot(
+  Age ~ Attrition,
+  data = hrdata,
+  main = "Age Distribution by Attrition",
+  xlab = "Attrition Status",
+  ylab = "Age"
+)
+```
+
+### Independent-Samples t-Test
+
+Test whether the mean age differs between employees with and without attrition.
+
+```{r attrition-ttest}
+yes_age <- hrdata[
+  hrdata$Attrition == "Yes", "Age"
+]
+
+no_age <- hrdata[
+  hrdata$Attrition == "No", "Age"
+]
+
+t.test(yes_age, no_age)
+```
+
+The default Welch two-sample t-test evaluates whether the group means differ while allowing for unequal variances.
+
+## 6. Simple Linear Regression
+
+Examine the relationship between employee age and monthly income.
+
+```{r simple-regression}
+model1 <- lm(
+  MonthlyIncome ~ Age,
+  data = hrdata
+)
+
+summary(model1)
+```
+
+## 7. Multiple Linear Regression
+
+Extend the model by including total working years alongside age.
+
+This allows us to examine the association between age and monthly income while accounting for employees' accumulated working experience, and vice versa.
+
+```{r multiple-regression}
+model2 <- lm(
+  MonthlyIncome ~ Age + TotalWorkingYears,
+  data = hrdata
+)
+
+summary(model2)
+```
+
+## 8. Interpretation and Limitations
+
+The statistical results above should be interpreted by examining group means, effect sizes, p-values, confidence intervals and regression coefficients.
+
+The analysis is observational. Associations do not establish causality, and omitted variables may influence the observed relationships.
+
+The next stage is to interpret the actual statistical outputs and summarise the findings.
