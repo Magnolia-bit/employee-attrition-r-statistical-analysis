@@ -151,7 +151,7 @@ The analysis itself primarily uses base R functions.
 
 I completed the R code and statistical analysis during guided Data Analytics Accelerator (DAA) learning, without AI assistance.
 
-ChatGPT helped draft and format this README and explain the existing statistical outputs. The numerical findings reported here come from the saved R analysis results.
+ChatGPT helped draft and format this README. The numerical findings reported here come from the saved R analysis results.
 
 ## Project Takeaway
 
