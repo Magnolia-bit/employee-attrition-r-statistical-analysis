@@ -2,15 +2,54 @@
 
 **R Programming | Statistical Analysis | Hypothesis Testing | Linear Regression**
 
----
-
 ## Project Overview
 
-This project explores relationships between employee characteristics, attrition and monthly income using the IBM HR Analytics Employee Attrition dataset.
+This project examines employee age, attrition and monthly income using the IBM HR Analytics Employee Attrition dataset.
 
-The objective was to apply statistical methods in R to investigate employee demographics, identify relationships between numerical variables and examine how age and working experience relate to income.
+The analysis compares the ages of employees who left and remained, explores relationships between employee characteristics, and investigates how the association between age and income changes when working experience is included in a regression model.
 
-**Project context:** Completed during guided data analytics learning, providing practical experience with R programming and applied statistics.
+Completed as part of guided Data Analytics Accelerator (DAA) learning.
+
+## Key Findings
+
+### 1. Employees who left were younger on average
+
+| Attrition status | Mean age |
+|---|---:|
+| Left | 33.61 years |
+| Remained | 37.56 years |
+
+Employees who left were approximately **3.95 years younger on average**.
+
+A Welch two-sample t-test found evidence of a difference in mean age (*p* < 0.001). The estimated difference, calculated as left minus remained, had a **95% confidence interval of −5.29 to −2.62 years**.
+
+This describes an association in the dataset. It does not establish that age causes attrition or explain why employees left.
+
+### 2. Age was positively associated with income in the simple model
+
+The model `MonthlyIncome ~ Age` estimated an increase of approximately **256.57 income units per month for each additional year of age**.
+
+Its R² was **0.248**, meaning it explained approximately **24.8% of the observed variation in monthly income** within this dataset.
+
+This model considers age alone. Its coefficient may reflect other characteristics associated with age, including accumulated working experience.
+
+### 3. Including experience substantially changed the age–income relationship
+
+Adding total working years increased R² from **0.248 to 0.599**.
+
+| Model | Age coefficient | Total working years coefficient | R² |
+|---|---:|---:|---:|
+| Age only | 256.57 | — | 0.248 |
+| Age and total working years | −26.87 | 489.13 | 0.599 |
+
+In the multiple regression:
+
+- Each additional year of total working experience was associated with approximately **489.13 more monthly income units**, holding age constant.
+- Each additional year of age was associated with approximately **26.87 fewer monthly income units**, holding total working experience constant.
+
+The change in the age coefficient shows that the age–income association depends substantially on whether working experience is included. It does **not** mean that getting older causes someone’s income to fall.
+
+The higher R² describes improved fit to the analysed data; it is not a measure of predictive accuracy on new employees.
 
 ## Dataset
 
@@ -19,136 +58,103 @@ The objective was to apply statistical methods in R to investigate employee demo
 | Dataset characteristic | Value |
 |---|---|
 | Employee records | 1,470 |
-| Variables | 35 |
+| Original variables | 35 |
 | Data format | CSV |
 | Primary tool | R / RStudio |
 | Analysis type | Exploratory and statistical |
 
-The dataset includes employee demographics, education, monthly income, working experience, job characteristics and attrition status.
-
----
+The dataset includes employee demographics, education, income, working experience, job characteristics and attrition status.
 
 ## Research Questions
 
-The analysis investigates three main questions:
-
-1. **Employee attrition:** Does average employee age differ between those who leave and those who remain?
-2. **Income and experience:** How are employee age and total working years associated with monthly income?
-3. **Employee characteristics:** What relationships exist between education, experience and other numerical variables?
-
----
+1. Does mean age differ between employees who left and those who remained?
+2. How are age and total working years associated with monthly income?
+3. What relationships and distributional differences appear across other employee characteristics?
 
 ## Analytical Methods
 
-### 01 — Exploratory Data Analysis
+### Exploratory Analysis
 
-Used R to import, inspect and explore employee records.
+Imported and inspected the dataset, selected numerical variables and explored relationships using:
 
-Techniques included:
+- Correlation matrices with `cor()`.
+- Scatterplot matrices with `pairs()`.
+- Labelled education categories created with `factor()`.
+- Box plots comparing age, experience and income across groups.
 
-- Data import using `read.csv()`
-- Data-frame indexing and variable selection
-- Correlation matrices using `cor()`
-- Scatterplot matrices using `pairs()`
-- Categorical variable conversion using `factor()`
-- Box plots to explore distributions across employee groups
+Education is an ordinal variable. Correlations involving its numerical codes require caution because the gaps between education categories are not necessarily equal.
 
-### 02 — Hypothesis Testing
+### Welch Two-Sample t-Test
 
-Applied a Welch two-sample t-test to compare employee ages between those who left and those who remained.
+Used `t.test()` to compare mean age between employees with and without attrition.
 
-**R function:** `t.test()`
+The Welch test allows the two groups to have unequal variances and sample sizes.
 
-The test examines whether there is statistical evidence of a difference in mean employee age between the two groups.
+### Linear Regression
 
-### 03 — Simple Linear Regression
+Estimated two models using `lm()`:
 
-Examined the relationship between employee age and monthly income.
+- **Simple regression:** `MonthlyIncome ~ Age`
+- **Multiple regression:** `MonthlyIncome ~ Age + TotalWorkingYears`
 
-**Model:** `MonthlyIncome ~ Age`
-
-**R function:** `lm()`
-
-### 04 — Multiple Linear Regression
-
-Extended the income model to include total working experience.
-
-**Model:** `MonthlyIncome ~ Age + TotalWorkingYears`
-
-**R function:** `lm()`
-
-This model examines how age and working experience are associated with monthly income when included together.
-
----
+Compared coefficients and R² to examine how including working experience changes the estimated association between age and income.
 
 ## Skills Demonstrated
 
-- R programming and data manipulation
-- Exploratory data analysis
-- Data visualisation using base R
-- Correlation analysis
-- Hypothesis testing and statistical inference
-- Simple and multiple linear regression
-- Working with numerical and categorical variables
-- Reproducible analysis using R Markdown
-
----
+- R programming and data selection.
+- Exploratory analysis and visualisation using base R.
+- Correlation analysis and hypothesis testing.
+- Simple and multiple linear regression.
+- Interpretation of coefficients, confidence intervals and model fit.
+- Analysis reporting using R Markdown.
 
 ## Repository Contents
 
 | File | Description |
 |---|---|
-| [employee_attrition_analysis.Rmd](employee_attrition_analysis.Rmd) | R Markdown source code and statistical analysis |
-| [employee_attrition_analysis.html](employee_attrition_analysis.html) | Rendered analytical report |
-| `HR-Employee-Attrition.csv` | Original dataset, where redistribution is permitted |
-| README.md | Project documentation and methodology |
-
----
+| [employee_attrition_analysis.Rmd](employee_attrition_analysis.Rmd) | R Markdown source containing the analysis |
+| [employee_attrition_analysis.html](employee_attrition_analysis.html) | Rendered report containing charts and statistical outputs |
+| [HR-Employee-Attrition.csv](HR-Employee-Attrition.csv) | Dataset used in the analysis |
+| [HR_Data_Dictionary.pdf](HR_Data_Dictionary.pdf) | Reference information about the dataset variables |
+| README.md | Project overview, findings, methods and limitations |
 
 ## How to Reproduce
 
 **Requirements:**
 
-- R
-- RStudio (recommended)
-- R Markdown and its rendering dependencies
-- IBM HR Analytics Employee Attrition dataset
+- R.
+- RStudio, recommended for rendering the report.
+- The `rmarkdown` package and its rendering dependencies.
 
-**Instructions:**
+**Steps:**
 
 1. Download or clone this repository.
-2. Place `HR-Employee-Attrition.csv` in the same directory as the R Markdown file.
-3. Open `employee_attrition_analysis.Rmd` in RStudio.
-4. Install any missing R Markdown rendering dependencies.
+2. Keep `HR-Employee-Attrition.csv` in the same directory as `employee_attrition_analysis.Rmd`.
+3. Open the R Markdown file in RStudio.
+4. Install `rmarkdown` and any missing rendering dependencies.
 5. Select **Knit → Knit to HTML**.
-6. Review the generated charts and statistical outputs.
+6. Review the generated plots and statistical outputs.
 
-The analysis primarily uses base R functions.
-
----
+The analysis itself primarily uses base R functions.
 
 ## Limitations
 
-This is an exploratory statistical analysis rather than a predictive employee attrition model.
+- This is an educational, exploratory analysis. Findings should not be assumed to represent a particular employer or the wider workforce.
+- Associations do not establish causality.
+- The income models omit potentially relevant variables such as job level, job role and education.
+- Age and working experience are related, so their conditional coefficients require careful interpretation.
+- Regression diagnostic checks are not included in the current report. Assumptions about linearity, residual variance and influential observations therefore need further assessment.
+- No held-out evaluation was performed. Reported R² values describe fit to the analysed data.
+- The regressions model monthly income; they do not predict employee attrition.
 
-- Statistical associations do not establish causality.
-- The dataset may not represent real-world employee populations.
-- Regression estimates may be affected by omitted explanatory variables.
-- Correlation does not necessarily imply a causal relationship.
-- The regression models examine monthly income rather than predicting employee attrition.
+## Project Attribution and AI Assistance
 
----
+I completed the R code and statistical analysis during guided Data Analytics Accelerator (DAA) learning, without AI assistance.
 
-## Project Attribution & AI Disclosure
-
-The R analysis was completed during guided Data Analytics Accelerator (DAA) learning, independently of AI assistance.
-
-AI was used solely to write and format this GitHub README in Markdown. The underlying R code, statistical analysis and analytical methods were completed without AI assistance.
-
----
+ChatGPT helped draft and format this README and explain the existing statistical outputs. The numerical findings reported here come from the saved R analysis results.
 
 ## Project Takeaway
 
-This project provided practical experience using R to explore data, visualise relationships and apply statistical techniques.
+The main lesson is that an association can change substantially when another relevant variable is included. Age was positively associated with income on its own, but that relationship changed after accounting for total working experience.
 
-The central learning was understanding how **correlation, hypothesis testing and regression can be used to investigate analytical questions**, while recognising the assumptions and limitations associated with statistical interpretation.
+Interpreting the models requires understanding what each coefficient measures, what the model leaves out and why an association should not be presented as a causal effect.
